@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KSPL – Employee &amp; Leave Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ─── KEYFRAMES ─────────────────────────────────────────── */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes glowPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(0, 180, 216, 0.3), 0 30px 60px rgba(0, 0, 0, 0.8);
+            }
+
+            50% {
+                box-shadow: 0 0 45px rgba(0, 180, 216, 0.6), 0 30px 60px rgba(0, 0, 0, 0.8);
+            }
+        }
+
+        @keyframes borderGlow {
+
+            0%,
+            100% {
+                border-color: rgba(0, 180, 216, 0.3);
+            }
+
+            50% {
+                border-color: rgba(0, 180, 216, 0.9);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% center;
+            }
+
+            100% {
+                background-position: 200% center;
+            }
+        }
+
+        @keyframes floatOrb {
+
+            0%,
+            100% {
+                transform: translateY(0px) scale(1);
+            }
+
+            50% {
+                transform: translateY(-20px) scale(1.05);
+            }
+        }
+
+        @keyframes titleReveal {
+            0% {
+                opacity: 0;
+                letter-spacing: 8px;
+            }
+
+            100% {
+                opacity: 1;
+                letter-spacing: 4px;
+            }
+        }
+
+        @keyframes scanline {
+            0% {
+                top: -5%;
+            }
+
+            100% {
+                top: 105%;
+            }
+        }
+
+        @keyframes dotBlink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.2;
+            }
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(3);
+                opacity: 0;
+            }
+        }
+
+        /* ─── RESET & BASE ──────────────────────────────────────── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --cyan: #00b4d8;
+            --cyan-lt: #90e0ef;
+            --navy: #0a192f;
+            --card-bg: rgba(13, 17, 23, 0.92);
+            --border: rgba(0, 180, 216, 0.25);
+            --text-muted: #8493a8;
+        }
+
+        /* ─── CUSTOM SCROLLBAR ───────────────────────────────────── */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--cyan), #0077b6);
+            border-radius: 10px;
+        }
+
+        /* ─── BODY ───────────────────────────────────────────────── */
+        body {
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding: 20px 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            color: #fff;
+            background: var(--navy);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ─── BACKGROUND LAYERS ──────────────────────────────────── */
+        .bg-img {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -4;
+            filter: brightness(0.55) saturate(1.2);
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -3;
+            background: linear-gradient(160deg, rgba(10, 25, 47, 0.65) 0%, rgba(0, 0, 0, 0.82) 100%);
+        }
+
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background-image:
+                linear-gradient(rgba(0, 180, 216, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 180, 216, 0.04) 1px, transparent 1px);
+            background-size: 48px 48px;
+            pointer-events: none;
+        }
+
+        /* Floating ambient orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: -1;
+            animation: floatOrb 8s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(0, 180, 216, 0.12);
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: rgba(72, 52, 212, 0.10);
+            bottom: 50px;
+            right: -80px;
+            animation-delay: 3s;
+        }
+
+        .orb-3 {
+            width: 200px;
+            height: 200px;
+            background: rgba(0, 180, 216, 0.08);
+            top: 50%;
+            left: 60%;
+            animation-delay: 5s;
+        }
+
+        /* Canvas particles */
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Scanline effect */
+        .scanline {
+            position: fixed;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(transparent, rgba(0, 180, 216, 0.08), transparent);
+            z-index: 1;
+            pointer-events: none;
+            animation: scanline 7s linear infinite;
+        }
+
+        /* ─── MAIN CONTAINER ─────────────────────────────────────── */
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 600px;
+            background: var(--card-bg);
+            padding: 36px 32px;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            overflow-y: auto;
+            max-height: 95vh;
+            animation: fadeInUp 0.7s ease both, glowPulse 4s ease-in-out 1s infinite, borderGlow 4s ease-in-out 1s infinite;
+        }
+
+        /* Top accent bar */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            border-radius: 2px;
+        }
+
+        /* ─── LOGO / HEADER ──────────────────────────────────────── */
+        .logo-box {
+            text-align: center;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 180, 216, 0.15);
+            position: relative;
+        }
+
+        .logo-box h1 {
+            font-size: 22px;
+            letter-spacing: 4px;
+            margin: 0;
+            font-weight: 700;
+            background: linear-gradient(90deg, #90e0ef, #00b4d8, #0077b6, #00b4d8, #90e0ef);
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 4s linear infinite, titleReveal 1s ease both;
+        }
+
+        .logo-tagline {
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .logo-tagline::before,
+        .logo-tagline::after {
+            content: '';
+            width: 40px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--cyan));
+        }
+
+        .logo-tagline::after {
+            background: linear-gradient(90deg, var(--cyan), transparent);
+        }
+
+
+
+        /* ─── SECTION HEADINGS ───────────────────────────────────── */
+        h2,
+        h3,
+        h4 {
+            text-align: center;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        h3 {
+            font-size: 18px;
+            background: linear-gradient(90deg, #fff, var(--cyan-lt));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h4 {
+            font-size: 14px;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+        }
+
+        h4::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 2px;
+            background: var(--cyan);
+            margin: 6px auto 0;
+            border-radius: 2px;
+        }
+
+        /* ─── INPUTS ─────────────────────────────────────────────── */
+        input,
+        select {
+            width: 100%;
+            padding: 13px 16px;
+            margin: 7px 0;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--cyan);
+            background: rgba(0, 180, 216, 0.06);
+            box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.12);
+        }
+
+        select option {
+            background: #0d1117;
+            color: #fff;
+        }
+
+        select option[value=""] {
+            color: var(--text-muted);
+        }
+
+        /* ─── BUTTONS ────────────────────────────────────────────── */
+        button {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            padding: 13px 16px;
+            margin: 7px 0;
+            border-radius: 12px;
+            border: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, #00b4d8, #0077b6);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 180, 216, 0.5);
+            background: linear-gradient(135deg, #90e0ef, #00b4d8);
+            color: #001f36;
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.4);
+            opacity: 0;
+            border-radius: 50%;
+            transform: scale(1) translate(-50%, -50%);
+            transform-origin: 50% 50%;
+        }
+
+        button:focus::after {
+            animation: ripple 0.6s ease-out;
+        }
+
+        .secondary {
+            background: rgba(255, 255, 255, 0.06);
+            color: #b0c4d8;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+        }
+
+        .secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            color: #fff;
+        }
+
+        /* ─── TABS ───────────────────────────────────────────────── */
+        .tab-btn {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-muted);
+            margin: 0 3px;
+            text-transform: none;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: none;
+            padding: 10px 6px;
+            transition: all 0.25s ease;
+        }
+
+        .tab-btn:hover {
+            background: rgba(0, 180, 216, 0.1);
+            color: var(--cyan);
+            border-color: rgba(0, 180, 216, 0.3);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #00b4d8, #0077b6);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.35);
+        }
+
+        .tab-btn.active:hover {
+            box-shadow: 0 6px 20px rgba(0, 180, 216, 0.5);
+        }
+
+        /* ─── CARDS ──────────────────────────────────────────────── */
+        .emp-card {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 16px;
+            border-radius: 14px;
+            margin-top: 10px;
+            font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            transition: border-color 0.3s, background 0.3s, transform 0.2s;
+        }
+
+        .emp-card:hover {
+            border-color: rgba(0, 180, 216, 0.3);
+            background: rgba(0, 180, 216, 0.04);
+            transform: translateX(3px);
+        }
+
+        .incoming-swap-card {
+            border-left: 3px solid var(--cyan);
+            background: rgba(0, 180, 216, 0.05);
+        }
+
+        /* ─── BADGES ─────────────────────────────────────────────── */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .badge-day {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+            color: #000;
+        }
+
+        .badge-night {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: #fff;
+        }
+
+        .badge-general {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: #fff;
+        }
+
+        /* ─── HR DIVIDER ─────────────────────────────────────────── */
+        hr {
+            margin: 22px 0;
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 180, 216, 0.3), transparent);
+        }
+
+        /* ─── BALANCE INFO ───────────────────────────────────────── */
+        .balance-info {
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0 6px;
+            font-size: 13px;
+            opacity: 0.9;
+            gap: 8px;
+        }
+
+        .balance-info b {
+            color: var(--cyan);
+            font-size: 16px;
+        }
+
+        /* ─── LEAVE TYPE / STATUS ────────────────────────────────── */
+        .leave-type {
+            display: inline-block;
+            color: var(--cyan);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+            background: rgba(0, 180, 216, 0.1);
+            padding: 2px 10px;
+            border-radius: 6px;
+        }
+
+        .leave-status {
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        /* ─── MISC ───────────────────────────────────────────────── */
+        .hidden {
+            display: none !important;
+        }
+
+        small {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        /* ─── EMP INFO CARD ──────────────────────────────────────── */
+        #empMainInfo {
+            background: linear-gradient(135deg, rgba(0, 180, 216, 0.08), rgba(0, 119, 182, 0.06)) !important;
+            border: 1px solid rgba(0, 180, 216, 0.25) !important;
+        }
+
+        /* ─── SHIMMER on load ────────────────────────────────────── */
+        .shimmer {
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 25%, rgba(0, 180, 216, 0.08) 50%, rgba(255, 255, 255, 0.03) 75%);
+            background-size: 200% auto;
+            animation: shimmer 1.5s linear infinite;
+        }
+
+        /* ─── DATE PICKER WRAPPER ────────────────────────────────── */
+        .date-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin: 7px 0;
+        }
+
+        .date-wrap input[type="text"] {
+            margin: 0;
+            flex: 1;
+            padding-right: 42px;
+            letter-spacing: 1.5px;
+        }
+
+        .date-wrap input[type="date"] {
+            position: absolute;
+            opacity: 0;
+            width: 1px;
+            height: 1px;
+            right: 36px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .date-wrap .cal-btn {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 40px;
+            margin: 0;
+            padding: 0;
+            border-radius: 0 12px 12px 0;
+            background: rgba(0, 180, 216, 0.15);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            border-left: none;
+            color: #00b4d8;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            box-shadow: none;
+            width: 40px !important;
+            transform: none !important;
+            letter-spacing: 0;
+        }
+
+        .date-wrap .cal-btn:hover {
+            background: rgba(0, 180, 216, 0.35);
+            color: #fff;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Background Layers -->
+    <!-- <img src="https://images.unsplash.com/photo-1544436440-104928e0856c?q=80&w=2070&auto=format&fit=crop" class="bg-img"
+        alt="Kakinada Sea Port"> -->
+    <img src="https://kakinadaseaports.in/wp-content/uploads/2013/12/slide-portfolio.jpg" class="bg-img"
+        alt="Kakinada Sea Port">
+    <div class="bg-overlay"></div>
+    <div class="bg-grid"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="scanline"></div>
+    <canvas id="particles"></canvas>
+
+    <div class="container">
+
+        <!-- LOGO SECTION -->
+        <div class="logo-box" style="display: flex; align-items: center;">
+            <div class="logo"><img src="logo.png" alt="KSPL-Logo" width="100px"></div>
+            <div style="padding-left: 0px;">
+                <h1>KAKINADA SEAPORTS LIMITED</h1>
+                <div class="logo-tagline">Employee Management Portal</div>
+            </div>
+        </div>
+
+        <!-- LOGIN -->
+        <div id="loginBox">
+            <input id="loginUser" placeholder="Username">
+            <input id="loginPass" type="password" placeholder="Password">
+            <button onclick="login()">Login</button>
+            <button class="secondary" onclick="showRegister()">Register</button>
+        </div>
+
+        <!-- REGISTER -->
+        <div id="registerBox" class="hidden">
+            <h3>Register</h3>
+            <input id="regUser" placeholder="Username">
+            <input id="regPass" type="password" placeholder="Password">
+            <select id="regDept">
+                <option value="">Select Department</option>
+                <option>Operations</option>
+                <option>Finance & Commercial</option>
+                <option>Business Development</option>
+                <option>IT & Digital Solutions</option>
+                <option>Safety, Environment & Security</option>
+                <option>Human Resources & Administration</option>
+            </select>
+            <select id="regDesig">
+                <option value="">Select Designation</option>
+                <option>Software Engineer</option>
+                <option>Systems Analyst</option>
+                <option>Network Administrator</option>
+                <option>HR Executive</option>
+                <option>Finance Executive</option>
+                <option>Safety Officer</option>
+            </select>
+            <button onclick="registerEmployee()">Register Account</button>
+            <button class="secondary" onclick="backToLogin()">Back</button>
+        </div>
+
+        <div id="adminBox" class="hidden">
+            <h3>Admin Dashboard</h3>
+
+            <h4>Create HOD</h4>
+            <input id="hodUser" placeholder="HOD Username">
+            <input id="hodPass" type="password" placeholder="HOD Password">
+            <select id="hodDept">
+                <option value="">Assign Department</option>
+                <option>Operations</option>
+                <option>Finance & Commercial</option>
+                <option>Business Development</option>
+                <option>IT & Digital Solutions</option>
+                <option>Safety, Environment & Security</option>
+                <option>Human Resources & Administration</option>
+            </select>
+            <button onclick="createHOD()">Create HOD</button>
+
+            <hr>
+            <h4>HOD Leave Requests</h4>
+            <div id="hodLeaveRequests"></div>
+
+            <hr>
+            <h4>All Users List</h4>
+            <div id="allUsersList"></div>
+
+            <hr>
+            <h4>System Actions</h4>
+            <button onclick="exportLeavesCSV()">📤 Export Leaves (CSV)</button>
+            <button class="secondary" onclick="renderAdmin()">🔄 Refresh Analytics</button>
+            <button class="secondary" onclick="logout()">Logout</button>
+        </div>
+
+        <!-- HOD -->
+        <div id="hodBox" class="hidden">
+            <h3>HOD Dashboard</h3>
+            <p id="hodDeptText" style="text-align:center;"></p>
+
+            <div style="display:flex; justify-content:center; margin-bottom:10px;">
+                <button class="tab-btn active" id="tabEmp" onclick="switchHODTab('employees')">Team</button>
+                <button class="tab-btn" id="tabApprovals" onclick="switchHODTab('approvals')">Approvals</button>
+                <button class="tab-btn" id="tabMyHODLeave" onclick="switchHODTab('myLeaves')">My Leave</button>
+            </div>
+
+            <div id="hodEmpSection">
+                <h4>Team Management</h4>
+                <div id="pendingList"></div>
+                <div id="approvedList"></div>
+            </div>
+
+
+            <div id="hodApprovalSection" class="hidden">
+                <h4>All Employee Approvals</h4>
+                <div id="approvalList"></div>
+                <hr>
+                <h4>Approval History</h4>
+                <div id="approvalHistory"></div>
+            </div>
+
+
+
+            <div id="hodMyLeaveSection" class="hidden">
+                <h4>Apply My Leave</h4>
+                <select id="hodLeaveType">
+                    <option value="">Select Leave Type</option>
+                    <option>Casual Leave</option>
+                    <option>Sick Leave</option>
+                    <option>Earned Leave</option>
+                </select>
+                <div class="date-wrap">
+                    <input type="text" id="hodLeaveFrom" placeholder="DD-MM-YYYY" maxlength="10"
+                        oninput="syncHidden(this,'hodLeaveFromH')" onblur="autoFixDate(this,'hodLeaveFromH')">
+                    <input type="date" id="hodLeaveFromH" tabindex="-1" onchange="syncText(this,'hodLeaveFrom')">
+                    <button class="cal-btn" onclick="openPicker('hodLeaveFromH')" title="Pick date">📅</button>
+                </div>
+                <div class="date-wrap">
+                    <input type="text" id="hodLeaveTo" placeholder="DD-MM-YYYY" maxlength="10"
+                        oninput="syncHidden(this,'hodLeaveToH')" onblur="autoFixDate(this,'hodLeaveToH')">
+                    <input type="date" id="hodLeaveToH" tabindex="-1" onchange="syncText(this,'hodLeaveTo')">
+                    <button class="cal-btn" onclick="openPicker('hodLeaveToH')" title="Pick date">📅</button>
+                </div>
+                <button onclick="applyHODLeave()">Submit My Request</button>
+                <hr>
+                <h4>My Leave History</h4>
+                <div id="hodMyLeaves"></div>
+            </div>
+
+            <hr>
+            <button class="secondary" onclick="logout()">Logout</button>
+        </div>
+
+        <!-- EMPLOYEE -->
+        <div id="empBox" class="hidden">
+            <h3>Employee Dashboard</h3>
+            <div id="empMainInfo" class="emp-card"
+                style="text-align:center; padding:15px; border-bottom:3px solid #00b4d8;">
+                <b id="empNameDisp" style="font-size:18px;"></b><br>
+                <span id="empDeptDisp"></span><br>
+                <div id="empShiftBadge" style="margin-top:10px;"></div>
+                <div id="empBalances" class="balance-info"></div>
+            </div>
+
+            <div style="display:flex; justify-content:center; margin:15px 0;">
+                <button class="tab-btn active" id="tabMySwap" onclick="switchEmpTab('swaps')">Shift Adjustment</button>
+                <button class="tab-btn" id="tabMyLeave" onclick="switchEmpTab('leaves')">Leaves</button>
+                <button class="tab-btn" id="tabMyPerm" onclick="switchEmpTab('permissions')">Permissions</button>
+            </div>
+
+
+
+            <!-- EMP TAB: SHIFT ADJUSTMENT -->
+            <div id="empSwapSection">
+                <h4>Incoming Adjustment Requests</h4>
+                <div id="incomingSwaps"></div>
+
+                <hr>
+                <h4>New Adjustment Request <span id="myDeptLabel"
+                        style="font-size:12px; color:#00b4d8; font-weight:normal;"></span></h4>
+                <select id="swapWhom">
+                    <option value="">Select Employee...</option>
+                </select>
+                <div class="date-wrap">
+                    <input type="text" id="swapDate" placeholder="DD-MM-YYYY" maxlength="10"
+                        oninput="syncHidden(this,'swapDateH')" onblur="autoFixDate(this,'swapDateH')">
+                    <input type="date" id="swapDateH" tabindex="-1" onchange="syncText(this,'swapDate')">
+                    <button class="cal-btn" onclick="openPicker('swapDateH')" title="Pick date">📅</button>
+                </div>
+                <select id="swapShift">
+                    <option value="Day">I am Day, want Night</option>
+                    <option value="Night">I am Night, want Day</option>
+                </select>
+                <button onclick="sendSwapRequest()">Send Adjustment Request</button>
+
+                <hr>
+                <h4>My Sent Adjustments</h4>
+                <div id="sentSwapsHistory"></div>
+            </div>
+
+            <!-- EMP TAB: LEAVES -->
+            <div id="empLeaveSection" class="hidden">
+                <h4>Apply Leave</h4>
+                <select id="leaveType">
+                    <option value="">Select Leave Type</option>
+                    <option>Casual Leave</option>
+                    <option>Sick Leave</option>
+                    <option>Earned Leave</option>
+                </select>
+                <div class="date-wrap">
+                    <input type="text" id="leaveFrom" placeholder="DD-MM-YYYY" maxlength="10"
+                        oninput="syncHidden(this,'leaveFromH')" onblur="autoFixDate(this,'leaveFromH')">
+                    <input type="date" id="leaveFromH" tabindex="-1" onchange="syncText(this,'leaveFrom')">
+                    <button class="cal-btn" onclick="openPicker('leaveFromH')" title="Pick date">📅</button>
+                </div>
+                <div class="date-wrap">
+                    <input type="text" id="leaveTo" placeholder="DD-MM-YYYY" maxlength="10"
+                        oninput="syncHidden(this,'leaveToH')" onblur="autoFixDate(this,'leaveTo')">
+                    <input type="date" id="leaveToH" tabindex="-1" onchange="syncText(this,'leaveTo')">
+                    <button class="cal-btn" onclick="openPicker('leaveToH')" title="Pick date">📅</button>
+                </div>
+                <button onclick="applyLeave()">Submit Request</button>
+                <hr>
+                <h4>My Leaves</h4>
+                <div id="myLeaves"></div>
+            </div>
+
+            <!-- EMP TAB: PERMISSIONS -->
+            <div id="empPermSection" class="hidden">
+                <h4>Apply Permission</h4>
+                <small style="color:#888;">Rule: Max 2 days/month, Max 2 hours/day</small>
+                <div class="date-wrap">
+                    <input type="text" id="permDate" placeholder="DD-MM-YYYY" maxlength="10"
+                        oninput="syncHidden(this,'permDateH')" onblur="autoFixDate(this,'permDateH')">
+                    <input type="date" id="permDateH" tabindex="-1" onchange="syncText(this,'permDate')">
+                    <button class="cal-btn" onclick="openPicker('permDateH')" title="Pick date">📅</button>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <input type="time" id="permFromTime" style="margin-bottom: 7px; flex: 1;" title="From Time">
+                    <input type="time" id="permToTime" style="margin-bottom: 7px; flex: 1;" title="To Time">
+                </div>
+                <button onclick="applyPermission()">Submit Permission Request</button>
+                <hr>
+                <h4>My Permission History</h4>
+                <div id="myPerms"></div>
+            </div>
+
+            <hr>
+            <button class="secondary" onclick="renderEmployee()">🔄 Refresh Dashboard</button>
+            <button class="secondary" onclick="logout()">Logout</button>
+        </div>
+
+    </div>
+
+    <script>
+        // ── DATE HELPERS ─────────────────────────────────────────────
+        // YYYY-MM-DD → DD-MM-YYYY (for display)
+        function fmtDate(d) {
+            if (!d) return '';
+            const parts = d.split('-');
+            if (parts.length !== 3) return d;
+            return parts[2] + '-' + parts[1] + '-' + parts[0];
+        }
+        // DD-MM-YYYY → YYYY-MM-DD (for storage/Date parsing)
+        function parseDate(d) {
+            if (!d) return '';
+            const parts = d.split('-');
+            if (parts.length !== 3) return d;
+            // If already YYYY-MM-DD (from hidden input sync), return as-is
+            if (parts[0].length === 4) return d;
+            return parts[2] + '-' + parts[1] + '-' + parts[0];
+        }
+        // Sync text input (DD-MM-YYYY) → hidden date input (YYYY-MM-DD)
+        function syncHidden(txt, hidId) {
+            const v = txt.value;
+            // Auto-insert dashes
+            let clean = v.replace(/[^0-9]/g, '');
+            if (clean.length >= 3) clean = clean.slice(0, 2) + '-' + clean.slice(2);
+            if (clean.length >= 6) clean = clean.slice(0, 5) + '-' + clean.slice(5, 9);
+            if (clean !== v) txt.value = clean;
+            const iso = parseDate(clean);
+            if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) document.getElementById(hidId).value = iso;
+        }
+        // Sync hidden date input → text input (DD-MM-YYYY)
+        function syncText(hid, txtId) {
+            const v = hid.value; // YYYY-MM-DD
+            if (v) document.getElementById(txtId).value = fmtDate(v);
+        }
+        // Auto-correct on blur
+        function autoFixDate(txt, hidId) {
+            const iso = parseDate(txt.value);
+            if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) {
+                document.getElementById(hidId).value = iso;
+                txt.value = fmtDate(iso);
+            }
+        }
+        // Open native date picker
+        function openPicker(hidId) {
+            const el = document.getElementById(hidId);
+            el.style.opacity = '1';
+            el.style.width = '1px'; el.style.height = '1px';
+            el.style.pointerEvents = 'auto';
+            el.showPicker ? el.showPicker() : el.click();
+            setTimeout(() => { el.style.opacity = '0'; el.style.pointerEvents = 'none'; }, 500);
+        }
+
+        // CONFIG & DB
+        const defaultAdmin = { username: "admin", password: "admin123", role: "Admin", department: "IT & Digital Solutions", designation: "System Administrator", status: "Approved" };
+        const getDB = (k, d = []) => JSON.parse(localStorage.getItem(k)) || d;
+        const setDB = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+        const getSession = () => JSON.parse(sessionStorage.getItem("kspl_currentUser"));
+        const setSession = (u) => sessionStorage.setItem("kspl_currentUser", JSON.stringify(u));
+
+        // UTILS
+        function hideAll() { ["loginBox", "registerBox", "adminBox", "hodBox", "empBox"].forEach(id => document.getElementById(id).classList.add("hidden")); }
+        function logout() { sessionStorage.removeItem("kspl_currentUser"); location.reload(); }
+        function showRegister() { hideAll(); registerBox.classList.remove("hidden"); }
+        function backToLogin() { hideAll(); loginBox.classList.remove("hidden"); }
+
+        // LOGIN / REG
+        function login() {
+            const users = getDB("kspl_users", [defaultAdmin]);
+            let u = loginUser.value.trim().toLowerCase(), p = loginPass.value.trim();
+            let user = users.find(x => x.username.toLowerCase() === u && x.password === p);
+            if (!user) return alert("Invalid credentials");
+            if (user.role === "Employee" && user.status !== "Approved") return alert("Waiting for HOD approval");
+            setSession(user);
+            renderDashboard();
+        }
+
+        function registerEmployee() {
+            let u = regUser.value.trim(), p = regPass.value.trim(), d = regDept.value, ds = regDesig.value;
+            if (!u || !p || !d || !ds) return alert("All fields required");
+            const users = getDB("kspl_users", [defaultAdmin]);
+            if (users.find(x => x.username.toLowerCase() === u.toLowerCase())) return alert("Username taken");
+
+            users.push({
+                username: u, password: p, role: "Employee",
+                department: d, designation: ds,
+                status: "Pending", shift: "Day",
+                leaveBalance: { CL: 6, SL: 4, EL: 10 }
+            });
+            setDB("kspl_users", users);
+            alert("Registered successfully. Please wait for HOD approval.");
+            location.reload();
+        }
+
+        function renderDashboard() {
+            hideAll();
+            const user = getSession();
+            if (!user) return;
+            if (user.role === "Admin") renderAdmin();
+            else if (user.role === "HOD") renderHOD();
+            else renderEmployee();
+        }
+
+        // ADMIN
+        function createHOD() {
+            let u = hodUser.value.trim(), p = hodPass.value.trim(), d = hodDept.value;
+            if (!u || !p || !d) return alert("Fill all fields");
+            const users = getDB("kspl_users", [defaultAdmin]);
+            if (users.find(x => x.username.toLowerCase() === u.toLowerCase())) return alert("Username taken");
+
+            users.push({
+                username: u, password: p, role: "HOD",
+                department: d, designation: "Head of Department",
+                status: "Approved", shift: "Day",
+                leaveBalance: { CL: 6, SL: 4, EL: 10 }
+            });
+            setDB("kspl_users", users);
+            alert("HOD Created Successfully");
+            renderAdmin();
+        }
+
+        function renderAdmin() {
+            adminBox.classList.remove("hidden");
+            allUsersList.innerHTML = "<h4>System Users</h4>";
+            getDB("kspl_users", [defaultAdmin]).forEach(u => {
+                allUsersList.innerHTML += `<div class="emp-card"><b>${u.username}</b> (${u.role})<br>${u.department} | ${u.designation} | ${u.status}</div>`;
+            });
+
+            const leaves = getDB("kspl_leaves");
+            hodLeaveRequests.innerHTML = "";
+            leaves.forEach((l, i) => {
+                if (l.role === "HOD" && l.status === "Pending") {
+                    hodLeaveRequests.innerHTML += `<div class="emp-card"><b>${l.employee}</b> (HOD)<br><span class="leave-type">${l.type}</span>: ${fmtDate(l.from)} to ${fmtDate(l.to)}<br>
+                        <button onclick="updateHODLeave(${i}, 'Approved')">Approve</button>
+                        <button onclick="updateHODLeave(${i}, 'Rejected')" class="secondary">Reject</button></div>`;
+                }
+            });
+            if (!hodLeaveRequests.innerHTML) hodLeaveRequests.innerHTML = "<p style='text-align:center; color:#555;'>No pending HOD requests.</p>";
+        }
+
+        function updateHODLeave(idx, status) {
+            const leaves = getDB("kspl_leaves");
+            const l = leaves[idx];
+            l.status = status;
+
+            if (status === "Approved") {
+                const users = getDB("kspl_users");
+                const u = users.find(x => x.username === l.employee);
+                if (u) {
+                    const days = Math.floor((new Date(l.to) - new Date(l.from)) / (86400000)) + 1;
+                    const map = { "Casual Leave": "CL", "Sick Leave": "SL", "Earned Leave": "EL" };
+                    if (u.leaveBalance) u.leaveBalance[map[l.type]] -= days;
+                }
+                setDB("kspl_users", users);
+            }
+
+            setDB("kspl_leaves", leaves);
+            renderAdmin();
+        }
+
+        function exportLeavesCSV() {
+            const freshLeaves = getDB("kspl_leaves");
+            let csv = "Employee,Role,Dept,Type,From,To,Status\n" +
+                freshLeaves.map(l => `${l.employee},${l.role},${l.department},${l.type},${l.from},${l.to},${l.status}`).join("\n");
+            let blob = new Blob([csv], { type: "text/csv" });
+            let a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "leave_report.csv"; a.click();
+        }
+
+        // HOD
+        function switchHODTab(tab) {
+            ["hodEmpSection", "hodApprovalSection", "hodMyLeaveSection"].forEach(s => {
+                const el = document.getElementById(s);
+                if (el) el.classList.add("hidden");
+            });
+            ["tabEmp", "tabApprovals", "tabMyHODLeave"].forEach(t => {
+                const el = document.getElementById(t);
+                if (el) el.classList.remove("active");
+            });
+            if (tab === 'employees') { hodEmpSection.classList.remove("hidden"); tabEmp.classList.add("active"); }
+            if (tab === 'approvals') { hodApprovalSection.classList.remove("hidden"); tabApprovals.classList.add("active"); }
+            if (tab === 'myLeaves') { hodMyLeaveSection.classList.remove("hidden"); tabMyHODLeave.classList.add("active"); }
+            renderHOD();
+        }
+
+        function renderHOD() {
+            const me = getSession();
+            if (!me) return logout();
+
+            hodBox.classList.remove("hidden");
+            const curDept = (me.department || "").trim().toLowerCase();
+            hodDeptText.innerHTML = `<b>Department: ${me.department}</b>`;
+
+            let users = getDB("kspl_users", [defaultAdmin]);
+
+            // Auto-purge any existing 'Rejected' users to ensure they are fully removed
+            const initialLength = users.length;
+            users = users.filter(u => u.status !== "Rejected");
+            if (users.length !== initialLength) {
+                setDB("kspl_users", users);
+            }
+
+            // Filter employees of the HOD's department and ensure unique usernames
+            const deptEmpsMap = new Map();
+            users.forEach(u => {
+                if (u.department && u.department.trim().toLowerCase() === curDept && u.role === "Employee") {
+                    deptEmpsMap.set(u.username.toLowerCase(), u);
+                }
+            });
+            const myEmps = Array.from(deptEmpsMap.values());
+
+            // 1. Team Tab
+            const pendingListEl = document.getElementById("pendingList");
+            const approvedListEl = document.getElementById("approvedList");
+            if (pendingListEl) pendingListEl.innerHTML = ""; // Registration items moved to Approvals
+            if (approvedListEl) {
+                approvedListEl.innerHTML = "<h5>Active Team</h5>";
+                myEmps.forEach(u => {
+                    if (u.status === "Approved") {
+                        approvedListEl.innerHTML += `<div class="emp-card"><b>${u.username}</b> - ${u.designation}<br><span class="badge badge-general">Active</span></div>`;
+                    }
+                });
+            }
+
+            // 2. Approvals Tab
+            const approvalListEl = document.getElementById("approvalList");
+            const approvalHistoryEl = document.getElementById("approvalHistory");
+            const hodMyLeavesEl = document.getElementById("hodMyLeaves");
+
+            if (approvalListEl) approvalListEl.innerHTML = "";
+            if (approvalHistoryEl) approvalHistoryEl.innerHTML = "";
+            if (hodMyLeavesEl) hodMyLeavesEl.innerHTML = "";
+
+            // --- A. Registrations ---
+            myEmps.forEach(e => {
+                if (e.status === "Pending") {
+                    let h = `<div class="emp-card">
+                        <span class="badge badge-general" style="background:#64748b;">REGISTRATION</span> 
+                        <b>${e.username}</b><br>
+                        Designation: ${e.designation}<br>`;
+                    if (approvalListEl) {
+                        approvalListEl.innerHTML += h + `
+                            <button onclick="updateStatus('${e.username}', 'Approved')">Approve User</button>
+                            <button onclick="updateStatus('${e.username}', 'Rejected')" class="secondary">Reject User</button></div>`;
+                    }
+                }
+            });
+
+            // 2. Leaves
+            const leaves = getDB("kspl_leaves");
+            leaves.forEach((l, i) => {
+                if (l.department && l.department.trim().toLowerCase() === curDept && l.role === "Employee") {
+                    let h = `<div class="emp-card">
+                        <span class="badge badge-general" style="background:#00b4d8;">LEAVE</span> 
+                        <b>${l.employee}</b>: <span class="leave-type">${l.type}</span><br>
+                        ${fmtDate(l.from)} to ${fmtDate(l.to)}<br>`;
+                    if (l.status === "Pending") {
+                        approvalListEl.innerHTML += h + `<button onclick="updateLeave(${i},'Approved')">Approve</button> <button class="secondary" onclick="updateLeave(${i},'Rejected')">Reject</button></div>`;
+                    } else {
+                        approvalHistoryEl.innerHTML += h + `Status: <b class="leave-status" style="color:${l.status === 'Approved' ? '#10b981' : '#f87171'}">${l.status}</b></div>`;
+                    }
+                }
+                if (l.employee === me.username && l.role === "HOD") {
+                    hodMyLeaves.innerHTML += `<div class="emp-card"><span class="leave-type">${l.type}</span>: ${fmtDate(l.from)} to ${fmtDate(l.to)}<br>Status: <b class="leave-status" style="color:${l.status === 'Approved' ? '#10b981' : (l.status === 'Rejected' ? '#f87171' : '#fbbf24')}">${l.status}</b></div>`;
+                }
+            });
+
+            // 2. Shift Adjustments
+            const swaps = getDB("kspl_swaps");
+            swaps.forEach((sw, i) => {
+                if (sw.department && sw.department.trim().toLowerCase() === curDept) {
+                    let h = `<div class="emp-card">
+                        <span class="badge badge-night" style="background:#7c3aed;">SHIFT</span> 
+                        <b>${sw.from} ↔ ${sw.to}</b><br>
+                        Date: ${fmtDate(sw.date)}<br>
+                        <small>${sw.from}: ${sw.fromShift} | ${sw.to}: ${sw.toShift}</small><br>`;
+
+                    if (sw.status === "Pending HOD") {
+                        approvalListEl.innerHTML += h + `
+                            <button onclick="approveShiftAdjustment(${i}, 'Approved')">Approve Swap</button>
+                            <button onclick="approveShiftAdjustment(${i}, 'Denied by HOD')" class="secondary">Deny</button></div>`;
+                    } else if (sw.status === "Approved" || sw.status === "Denied by HOD") {
+                        approvalHistoryEl.innerHTML += h + `Status: <b style="color:${sw.status === 'Approved' ? '#10b981' : '#f87171'}">${sw.status}</b></div>`;
+                    }
+                }
+            });
+
+            // 3. Permissions
+            const perms = getDB("kspl_permissions");
+            let pendingPermsHTML = "";
+            let historyPermsHTML = "";
+
+            perms.forEach((p, i) => {
+                if (p.department && p.department.trim().toLowerCase() === curDept) {
+                    let h = `<div class="emp-card">
+                        <span class="badge badge-day" style="background:#f59e0b;">PERMISSION</span> 
+                        <b>${p.employee}</b><br>
+                        Date: ${fmtDate(p.date)} (${p.hours} hrs)<br>
+                        <small>${p.timing}</small><br>`;
+
+                    if (p.status === "Pending") {
+                        pendingPermsHTML += h + `
+                            <button onclick="updatePermStatus(${i}, 'Approved')">Approve</button>
+                            <button onclick="updatePermStatus(${i}, 'Rejected')" class="secondary">Reject</button></div>`;
+                    } else {
+                        historyPermsHTML += h + `Status: <b style="color:${p.status === 'Approved' ? '#10b981' : '#f87171'}">${p.status}</b></div>`;
+                    }
+                }
+            });
+
+            if (pendingPermsHTML) {
+                approvalListEl.innerHTML += `<h5 style="color:#f59e0b; margin-top:15px; text-transform:uppercase;">Permission Requests</h5>` + pendingPermsHTML;
+            }
+            if (historyPermsHTML) {
+                approvalHistoryEl.innerHTML += `<h5 style="color:#f59e0b; margin-top:15px; text-transform:uppercase;">Permissions History</h5>` + historyPermsHTML;
+            }
+
+            if (approvalListEl && !approvalListEl.innerHTML) approvalListEl.innerHTML = "<p style='text-align:center; color:#555; padding:20px;'>No pending approvals found.</p>";
+            if (approvalHistoryEl && !approvalHistoryEl.innerHTML) approvalHistoryEl.innerHTML = "<p style='text-align:center; color:#555; padding:20px;'>No approval history.</p>";
+
+
+
+            // Show HOD personal balances if they exist
+            const u = users.find(x => x.username === me.username);
+            if (u && u.leaveBalance) {
+                hodDeptText.innerHTML += `<div class="balance-info">
+                    CL: ${u.leaveBalance.CL} | SL: ${u.leaveBalance.SL} | EL: ${u.leaveBalance.EL}
+                </div>`;
+            }
+        }
+
+
+
+        function applyHODLeave() {
+            const me = getSession();
+            if (!hodLeaveType.value || !hodLeaveFrom.value || !hodLeaveTo.value) return alert("Missing fields");
+            const hodFromISO = parseDate(hodLeaveFrom.value), hodToISO = parseDate(hodLeaveTo.value);
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(hodFromISO) || !/^\d{4}-\d{2}-\d{2}$/.test(hodToISO)) return alert("Please enter valid dates in DD-MM-YYYY format");
+            const leaves = getDB("kspl_leaves");
+            leaves.push({ employee: me.username, department: me.department, role: "HOD", type: hodLeaveType.value, from: hodFromISO, to: hodToISO, status: "Pending" });
+            setDB("kspl_leaves", leaves); alert("Leave request submitted to Admin"); renderHOD();
+        }
+
+        function updateStatus(uname, status) {
+            let users = getDB("kspl_users", [defaultAdmin]);
+            // Use case-insensitive find for robustness
+            const idx = users.findIndex(x => x.username.trim().toLowerCase() === uname.trim().toLowerCase());
+            if (idx !== -1) {
+                if (status === "Rejected") {
+                    // Remove rejected user entirely from the database
+                    users.splice(idx, 1);
+                    setDB("kspl_users", users);
+                    alert("Registration Rejected – " + uname + " has been removed.");
+                } else {
+                    users[idx].status = status;
+                    setDB("kspl_users", users);
+                    alert("Registration " + status + " for " + uname);
+                }
+            } else {
+                alert("User not found: " + uname);
+            }
+            renderHOD();
+        }
+
+
+        function updateLeave(idx, status) {
+            const leaves = getDB("kspl_leaves");
+            const l = leaves[idx];
+            l.status = status;
+
+            if (status === "Approved") {
+                const users = getDB("kspl_users");
+                const u = users.find(x => x.username === l.employee);
+                if (u && u.leaveBalance) {
+                    const days = Math.floor((new Date(l.to) - new Date(l.from)) / (86400000)) + 1;
+                    const map = { "Casual Leave": "CL", "Sick Leave": "SL", "Earned Leave": "EL" };
+                    u.leaveBalance[map[l.type]] -= days;
+                }
+                setDB("kspl_users", users);
+            }
+
+            setDB("kspl_leaves", leaves);
+            renderHOD();
+        }
+
+        function approveShiftAdjustment(idx, status) {
+            const swaps = getDB("kspl_swaps");
+            const sw = swaps[idx];
+            sw.status = status;
+
+            if (status === "Approved") {
+                const users = getDB("kspl_users", [defaultAdmin]);
+                const u1 = users.find(x => x.username.toLowerCase() === sw.from.toLowerCase());
+                const u2 = users.find(x => x.username.toLowerCase() === sw.to.toLowerCase());
+                if (u1 && u2) {
+                    const temp = u1.shift;
+                    u1.shift = u2.shift;
+                    u2.shift = temp;
+                }
+                setDB("kspl_users", users);
+            }
+            setDB("kspl_swaps", swaps);
+            alert("Shift adjustment " + status);
+            renderHOD();
+        }
+
+        function updatePermStatus(idx, status) {
+            const perms = getDB("kspl_permissions");
+            perms[idx].status = status;
+            setDB("kspl_permissions", perms);
+            alert("Permission " + status);
+            renderHOD();
+        }
+
+        // EMPLOYEE
+        function switchEmpTab(tab) {
+            ["empSwapSection", "empLeaveSection", "empPermSection"].forEach(s => document.getElementById(s).classList.add("hidden"));
+            ["tabMySwap", "tabMyLeave", "tabMyPerm"].forEach(t => document.getElementById(t).classList.remove("active"));
+            if (tab === 'swaps') { empSwapSection.classList.remove("hidden"); tabMySwap.classList.add("active"); }
+            if (tab === 'leaves') { empLeaveSection.classList.remove("hidden"); tabMyLeave.classList.add("active"); }
+            if (tab === 'permissions') { empPermSection.classList.remove("hidden"); tabMyPerm.classList.add("active"); }
+            renderEmployee();
+        }
+
+        function renderEmployee() {
+            const s = getSession();
+            const users = getDB("kspl_users", [defaultAdmin]);
+            const me = users.find(x => x.username.toLowerCase() === s.username.toLowerCase());
+            if (!me) return logout();
+
+            empBox.classList.remove("hidden");
+            empNameDisp.innerText = me.username;
+            empDeptDisp.innerHTML = `<span style="color:#00b4d8; font-weight:600;">${me.department}</span><br><small>${me.designation}</small>`;
+            empShiftBadge.innerHTML = `Active Shift: <span class="badge badge-${(me.shift || 'Day').toLowerCase()}">${me.shift || 'Day'}</span>`;
+            myDeptLabel.innerText = `(Team: ${me.department})`;
+
+            if (me.leaveBalance) {
+                empBalances.innerHTML = `CL: <b>${me.leaveBalance.CL}</b> | SL: <b>${me.leaveBalance.SL}</b> | EL: <b>${me.leaveBalance.EL}</b>`;
+            }
+
+            // Shift Adjustment Dropdown
+            swapWhom.innerHTML = '<option value="">Select Colleague...</option>';
+            users.forEach(u => {
+                const isSameDept = u.department && me.department && u.department.trim().toLowerCase() === me.department.trim().toLowerCase();
+                if (u.role === "Employee" && u.username.toLowerCase() !== me.username.toLowerCase() && isSameDept && u.status === "Approved") {
+                    swapWhom.innerHTML += `<option value="${u.username}">${u.username} (${u.designation})</option>`;
+                }
+            });
+
+            // Incoming & Pending Swaps
+            const swaps = getDB("kspl_swaps");
+            incomingSwaps.innerHTML = "";
+            const currentUser = me.username.trim().toLowerCase();
+
+            // 1. Incoming
+            swaps.filter(sw => sw.to && sw.to.trim().toLowerCase() === currentUser && sw.status === "Pending").forEach(sw => {
+                const idx = swaps.indexOf(sw);
+                incomingSwaps.innerHTML += `<div class="emp-card incoming-swap-card">
+                    <b>${sw.from}</b> wants to adjust shifts!<br>
+                    <small>Date: ${fmtDate(sw.date)}</small><br>
+                    Their ${sw.fromShift} ↔ Your ${sw.toShift}
+                    <div style="display:flex; gap:5px; margin-top:10px;">
+                        <button onclick="handleSwap(${idx}, 'Accepted')" style="background:#28a745; color:white;">Accept</button>
+                        <button onclick="handleSwap(${idx}, 'Rejected')" class="secondary">Reject</button>
+                    </div>
+                </div>`;
+            });
+
+            // 2. Waiting for HOD
+            const waiting = swaps.filter(sw => (sw.from.toLowerCase() === currentUser || (sw.to && sw.to.toLowerCase() === currentUser)) && sw.status === "Pending HOD");
+            if (waiting.length > 0) {
+                incomingSwaps.innerHTML += `<h5 style="margin-top:20px; color:#fbbf24;">⏳ Pending HOD Final Approval</h5>`;
+                waiting.forEach(sw => {
+                    const other = sw.from.toLowerCase() === currentUser ? sw.to : sw.from;
+                    incomingSwaps.innerHTML += `<div class="emp-card" style="border-left: 4px solid #fbbf24; background: rgba(251, 191, 36, 0.05);">
+                        <b>Adjustment with ${other}</b><br><small>Date: ${fmtDate(sw.date)}</small> — <span style="color:#fbbf24;">Awaiting HOD</span>
+                    </div>`;
+                });
+            }
+            if (!incomingSwaps.innerHTML) incomingSwaps.innerHTML = "<p style='text-align:center; color:#555;'>No requests.</p>";
+
+            // Sent History
+            sentSwapsHistory.innerHTML = "";
+            swaps.filter(sw => sw.from && sw.from.trim().toLowerCase() === currentUser).reverse().forEach(sw => {
+                sentSwapsHistory.innerHTML += `<div class="emp-card">To: <b>${sw.to}</b> | Date: ${fmtDate(sw.date)}<br>Status: <b>${sw.status}</b></div>`;
+            });
+
+            // Leaves
+            const leaves = getDB("kspl_leaves");
+            myLeaves.innerHTML = "";
+            leaves.filter(l => l.employee && l.employee.trim().toLowerCase() === currentUser).reverse().forEach(l => {
+                myLeaves.innerHTML += `<div class="emp-card">
+                    <span class="leave-type">${l.type}</span> - <b class="leave-status" style="color:${l.status === 'Approved' ? '#10b981' : (l.status === 'Rejected' ? '#f87171' : '#fbbf24')}">${l.status}</b><br>
+                    <small>${fmtDate(l.from)} to ${fmtDate(l.to)}</small>
+                </div>`;
+            });
+
+            // Permissions
+            const perms = getDB("kspl_permissions");
+            myPerms.innerHTML = "";
+            perms.filter(p => p.employee.toLowerCase() === currentUser).reverse().forEach(p => {
+                myPerms.innerHTML += `<div class="emp-card">
+                    <b>Date: ${fmtDate(p.date)}</b> | ${p.hours} Hours<br>
+                    <small>${p.timing}</small><br>
+                    Status: <b style="color:${p.status === 'Approved' ? '#10b981' : (p.status === 'Rejected' ? '#f87171' : '#fbbf24')}">${p.status}</b>
+                </div>`;
+            });
+        }
+
+
+
+        function applyLeave() {
+            const me = getSession();
+            if (!leaveType.value || !leaveFrom.value || !leaveTo.value) return alert("Missing fields");
+            const fromISO = parseDate(leaveFrom.value), toISO = parseDate(leaveTo.value);
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(fromISO) || !/^\d{4}-\d{2}-\d{2}$/.test(toISO)) return alert("Please enter valid dates in DD-MM-YYYY format");
+            const leaves = getDB("kspl_leaves");
+            leaves.push({ employee: me.username, department: me.department, role: "Employee", type: leaveType.value, from: fromISO, to: toISO, status: "Pending" });
+            setDB("kspl_leaves", leaves); renderEmployee();
+        }
+
+        function formatAMPM(timeStr) {
+            let [h, m] = timeStr.split(':');
+            h = parseInt(h);
+            let ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            return h.toString().padStart(2, '0') + ':' + m + ' ' + ampm;
+        }
+
+        function applyPermission() {
+            const me = getSession();
+            const dateRaw = permDate.value, fromTime = permFromTime.value, toTime = permToTime.value;
+            const date = parseDate(dateRaw);
+            if (!dateRaw || !fromTime || !toTime) return alert("Fill all fields");
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return alert("Please enter date in DD-MM-YYYY format");
+
+            // Calculate hours strictly
+            const [fH, fM] = fromTime.split(':').map(Number);
+            const [tH, tM] = toTime.split(':').map(Number);
+            let rawHours = (tH + (tM / 60)) - (fH + (fM / 60));
+
+            if (rawHours <= 0) return alert("To Time must be after From Time");
+
+            // Precision rounding for boundaries
+            let currentRequestHours = Number(rawHours.toFixed(2));
+
+            const perms = getDB("kspl_permissions");
+            const reqDate = new Date(date);
+            const m = reqDate.getMonth(), y = reqDate.getFullYear();
+
+            // Calculate cumulative daily hours
+            const dailyHours = perms
+                .filter(p => p.employee === me.username && p.date === date && p.status !== "Rejected")
+                .reduce((sum, p) => sum + parseFloat(p.hours || 0), 0);
+
+            if ((dailyHours + currentRequestHours) > 2) return alert("completed your permissions");
+
+            const monthlyCount = perms.filter(p => {
+                const d = new Date(p.date);
+                return p.employee === me.username && p.status !== "Rejected" && d.getMonth() === m && d.getFullYear() === y;
+            }).length;
+
+            if (monthlyCount >= 2) return alert("completed your permissions");
+
+            const timingLabel = formatAMPM(fromTime) + " - " + formatAMPM(toTime);
+            // Limit hours to 1 decimal point for display
+            const displayHours = Number.isInteger(currentRequestHours) ? currentRequestHours : currentRequestHours.toFixed(1);
+
+            perms.push({ employee: me.username, department: me.department, date, hours: displayHours, timing: timingLabel, status: "Pending" });
+            setDB("kspl_permissions", perms);
+            alert("Permission request submitted");
+            renderEmployee();
+        }
+
+        function sendSwapRequest() {
+            const s = getSession();
+            const users = getDB("kspl_users", [defaultAdmin]);
+            const me = users.find(x => x.username.toLowerCase() === s.username.toLowerCase());
+            if (!me) return logout();
+            const to = swapWhom.value, dateRaw = swapDate.value, fromShift = swapShift.value;
+            const date = parseDate(dateRaw);
+            if (!to || !dateRaw) return alert("Select colleague & date");
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return alert("Please enter date in DD-MM-YYYY format");
+            const swaps = getDB("kspl_swaps");
+            swaps.push({ from: me.username, to, date, fromShift, toShift: (fromShift === "Day" ? "Night" : "Day"), status: "Pending", department: me.department });
+            setDB("kspl_swaps", swaps);
+            alert("Sent to " + to);
+            renderEmployee();
+        }
+
+        function handleSwap(idx, status) {
+            const swaps = getDB("kspl_swaps");
+            swaps[idx].status = (status === "Accepted" ? "Pending HOD" : status);
+            setDB("kspl_swaps", swaps);
+            alert("Adjustment " + status);
+            renderEmployee();
+        }
+
+        // Init
+        if (getSession()) renderDashboard();
+
+        // Event Listeners for Enter key
+        document.getElementById("loginUser").addEventListener("keydown", (e) => { if (e.key === "Enter") login(); });
+        document.getElementById("loginPass").addEventListener("keydown", (e) => { if (e.key === "Enter") login(); });
+
+        // ── PARTICLE CANVAS ──────────────────────────────────────────
+        (function () {
+            const canvas = document.getElementById('particles');
+            const ctx = canvas.getContext('2d');
+            let W, H, particles = [];
+
+            function resize() {
+                W = canvas.width = window.innerWidth;
+                H = canvas.height = window.innerHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            function Particle() {
+                this.reset = function () {
+                    this.x = Math.random() * W;
+                    this.y = Math.random() * H;
+                    this.r = Math.random() * 1.8 + 0.4;
+                    this.vx = (Math.random() - 0.5) * 0.4;
+                    this.vy = (Math.random() - 0.5) * 0.4 - 0.2;
+                    this.alpha = Math.random() * 0.5 + 0.1;
+                    this.fade = (Math.random() * 0.003) + 0.001;
+                    this.color = Math.random() > 0.6 ? '0,180,216' : '144,224,239';
+                };
+                this.reset();
+                this.y = Math.random() * H; // spread initial y
+            }
+
+            for (let i = 0; i < 90; i++) particles.push(new Particle());
+
+            function draw() {
+                ctx.clearRect(0, 0, W, H);
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.alpha -= p.fade;
+                    if (p.alpha <= 0 || p.x < 0 || p.x > W || p.y < -10) p.reset();
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${p.color},${p.alpha})`;
+                    ctx.fill();
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        })();
+
+    </script>
+
+    <!-- Toast Notification Styles -->
+    <style>
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: rgba(13, 17, 23, 0.95);
+            border: 1px solid rgba(0, 180, 216, 0.5);
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'Outfit', sans-serif;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 180, 216, 0.2);
+            z-index: 9999;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+            opacity: 0;
+            pointer-events: none;
+            max-width: 360px;
+            text-align: center;
+            backdrop-filter: blur(12px);
+        }
+
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        #toast.toast-success {
+            border-color: rgba(16, 185, 129, 0.6);
+        }
+
+        #toast.toast-error {
+            border-color: rgba(248, 113, 113, 0.6);
+        }
+    </style>
+</body>
+
+</html>
